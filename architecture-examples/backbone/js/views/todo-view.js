@@ -21,7 +21,8 @@ var app = app || {};
 			'dblclick label': 'edit',
 			'click .destroy': 'clear',
 			'keypress .edit': 'updateOnEnter',
-			'blur .edit': 'close'
+			'blur .edit': 'close',
+			'click .url-info': 'getURLInfo'
 		},
 
 		// The TodoView listens for changes to its model, re-rendering. Since there's
@@ -31,6 +32,11 @@ var app = app || {};
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'destroy', this.remove);
 			this.listenTo(this.model, 'visible', this.toggleVisible);
+		},
+
+		// GET URL Info
+		getURLInfo: function () {
+			console.log('getURLInfo');
 		},
 
 		// Re-render the titles of the todo item.
