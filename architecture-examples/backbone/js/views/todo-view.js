@@ -65,6 +65,18 @@ var app = app || {};
 			this.$input.focus();
 		},
 
+		// Check for whether the input is an URL
+		_isURL: function (input) {
+			// dummy version for now
+			// todo
+			// make this more resilient
+			if (input.indexOf('http://') === 0) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+
 		// Close the `"editing"` mode, saving changes to the todo.
 		close: function () {
 			var trimmedValue = this.$input.val().trim();
@@ -72,6 +84,12 @@ var app = app || {};
 
 			if (trimmedValue) {
 				this.model.save({ title: trimmedValue });
+
+				// todo
+				// fix duplication of informaiton
+				if (this._isURL(trimmedValue)) {
+					this.model.save({ url: trimmedValue });
+				}
 			} else {
 				this.clear();
 			}
