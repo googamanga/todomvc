@@ -37,9 +37,9 @@ var app = app || {};
 		},
 
 		// Validate the URL field
-		validate: function (attrs) {
-			if (this._isURL(attrs.title)) {
-				this.url = true;
+		validate: function () {
+			if (this._isURL(this.get('title'))) {
+				this.set('url', true);
 			}
 		}
 
