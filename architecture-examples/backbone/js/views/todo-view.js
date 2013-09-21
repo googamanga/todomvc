@@ -34,8 +34,16 @@ var app = app || {};
 			this.listenTo(this.model, 'visible', this.toggleVisible);
 		},
 
+		renderYoutube: function () {
+			var $youtube = $('<div></div>');
+			$youtube.html('<iframe width="420" height="315"' +
+				'src="http://www.youtube.com/embed/hqiNL4Hn04A"' +
+				'frameborder="0" allowfullscreen></iframe>');
+			return $youtube;
+		},
+
 		// GET URL Info
-		getURLInfo: function () {
+		getURLInfo: function (event) {
 			console.log('getURLInfo');
 			//http://ajaxian.com/archives/using-yql-as-a-proxy-for-cross-domain-ajax
 			//https://developer.yahoo.com/yql/console/?q=select%20*%20from%20meetup.events%20where%20key%3D%22...%22%20and%20zip%3D%2210016%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys#h=select+*+from+youtube.video+where+id%3D'gmvQ1uA202M'
@@ -49,10 +57,14 @@ var app = app || {};
 				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
 				+ "&callback=";
 
+			var $target = $(event.target);
+			var $urlInfo = $target.closest('.url-info');
+			var that = this;
 
 			$.getJSON(yql)
 				.done(function (data) {
 					console.log('data', data);
+					$urlInfo.append(that.renderYoutube());
 				})
 				.fail(function (err) {
 					console.log('err', err);
