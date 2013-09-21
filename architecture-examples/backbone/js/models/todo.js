@@ -13,7 +13,7 @@ var app = app || {};
 		// and ensure that each todo created has `title` and `completed` keys.
 		defaults: {
 			title: '',
-			url: '',
+			url: false,
 			completed: false
 		},
 
@@ -22,6 +22,26 @@ var app = app || {};
 			this.save({
 				completed: !this.get('completed')
 			});
+		},
+
+		// Check for whether the input is an URL
+		_isURL: function (input) {
+			// dummy version for now
+			// todo
+			// make this more resilient
+			if (input.indexOf('http://') === 0) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+
+		// Validate the URL field
+		validate: function (attrs) {
+			if (this._isURL(attrs.title)) {
+				this.url = true;
+			}
 		}
+
 	});
 })();

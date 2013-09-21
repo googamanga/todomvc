@@ -95,12 +95,8 @@ var app = app || {};
 
 		// Generate the attributes for a new Todo item.
 		newAttributes: function () {
-			// todo
-			// write a function to make sure the url is valid prior to saving
-
 			return {
 				title: this.$input.val().trim(),
-				url: this.$input.val().trim(),
 				order: app.todos.nextOrder(),
 				completed: false
 			};
