@@ -39,7 +39,7 @@ var app = app || {};
 			this.listenTo(app.todos, 'filter', this.filterAll);
 			this.listenTo(app.todos, 'all', this.render);
 
-			// Suppresses 'add' events with {reset: true} and prevents the app view 
+			// Suppresses 'add' events with {reset: true} and prevents the app view
 			// from being re-rendered for every model. Only renders when the 'reset'
 			// event is triggered at the end of the fetch.
 			app.todos.fetch({reset: true});
@@ -95,8 +95,12 @@ var app = app || {};
 
 		// Generate the attributes for a new Todo item.
 		newAttributes: function () {
+			// todo
+			// write a function to make sure the url is valid prior to saving
+
 			return {
 				title: this.$input.val().trim(),
+				url: this.$input.val().trim(),
 				order: app.todos.nextOrder(),
 				completed: false
 			};
