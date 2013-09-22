@@ -34,21 +34,20 @@ var app = app || {};
 			this.listenTo(this.model, 'visible', this.toggleVisible);
 		},
 
-		renderYoutube: function () {
+		renderYoutube: function (vid) {
 			var $youtube = $('<div></div>');
 			$youtube.html('<iframe width="420" height="315"' +
-				'src="http://www.youtube.com/embed/hqiNL4Hn04A"' +
+				'src="http://www.youtube.com/embed/' + vid + '"' +
 				'frameborder="0" allowfullscreen></iframe>');
 			return $youtube;
 		},
 
-		getYoutubeInfo: function () {
+		getYoutubeInfo: function (vid) {
 			//http://ajaxian.com/archives/using-yql-as-a-proxy-for-cross-domain-ajax
 			//https://developer.yahoo.com/yql/console/?q=select%20*%20from%20meetup.events%20where%20key%3D%22...%22%20and%20zip%3D%2210016%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys#h=select+*+from+youtube.video+where+id%3D'gmvQ1uA202M'
 			//http://net.tutsplus.com/tutorials/javascript-ajax/quick-tip-cross-domain-ajax-request-with-yql-and-jquery/
 			var deferred = $.Deferred();
 
-			var vid = 'gmvQ1uA202M';
 
 			// Take the provided url, and add it to a YQL query. Make sure you encode it!
 			var yql = 'https://query.yahooapis.com/v1/public/yql?q='
@@ -62,7 +61,7 @@ var app = app || {};
 			$.getJSON(yql)
 				.done(function (data) {
 					// console.log('data', data);
-					deferred.resolve(that.renderYoutube());
+					deferred.resolve(that.renderYoutube(vid));
 				})
 				.fail(function (err) {
 					console.log('err', err);
@@ -93,9 +92,10 @@ var app = app || {};
 			var $urlInfo = $target.closest('.url-info');
 
 			var isYoutube = true;
+			var vid = 'gmvQ1uA202M';
 
 			if (isYoutube) {
-				this.getYoutubeInfo()
+				this.getYoutubeInfo(vid)
 					.then(function (data) {
 						// console.log('promise data', data);
 						$urlInfo.append(data);
