@@ -34,9 +34,10 @@ var app = app || {};
 			this.listenTo(this.model, 'visible', this.toggleVisible);
 		},
 
+		// Render the embeded player for YouTube videos
 		renderYoutube: function (vid, videoTitle) {
 			var $youtube = $('<div class="youtube-right"></div>');
-			$youtube.html('<h3>' + videoTitle + '</h3>' +
+			$youtube.html('<h3>Title: ' + videoTitle + '</h3>' +
 				'<iframe width="420" height="315"' +
 				'src="http://www.youtube.com/embed/' + vid + '"' +
 				'frameborder="0" allowfullscreen></iframe>');
@@ -106,7 +107,7 @@ var app = app || {};
 						console.log('img', realImageURL);
 						deferred.resolve(realImageURL);
 					} else {
-						deferred.reject(false);	//what should we pass?
+						deferred.reject(false);
 					}
 				})
 				.fail(function (err) {
@@ -197,6 +198,8 @@ var app = app || {};
 			this.toggleVisible();
 			this.$input = this.$('.edit');
 
+			// todo
+			// this is not the best way to trigger event
 			if (this.model.get('url')) {
 				this.$el.find('.url-info').trigger('click');
 				this.$el.off('click', '.url-info');
