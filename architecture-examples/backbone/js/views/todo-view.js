@@ -42,9 +42,7 @@ var app = app || {};
 			return $youtube;
 		},
 
-		// GET URL Info
-		getURLInfo: function (event) {
-			console.log('getURLInfo');
+		getYoutubeInfo: function () {
 			//http://ajaxian.com/archives/using-yql-as-a-proxy-for-cross-domain-ajax
 			//https://developer.yahoo.com/yql/console/?q=select%20*%20from%20meetup.events%20where%20key%3D%22...%22%20and%20zip%3D%2210016%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys#h=select+*+from+youtube.video+where+id%3D'gmvQ1uA202M'
 			//http://net.tutsplus.com/tutorials/javascript-ajax/quick-tip-cross-domain-ajax-request-with-yql-and-jquery/
@@ -57,18 +55,45 @@ var app = app || {};
 				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
 				+ "&callback=";
 
-			var $target = $(event.target);
-			var $urlInfo = $target.closest('.url-info');
-			var that = this;
+
 
 			$.getJSON(yql)
 				.done(function (data) {
 					console.log('data', data);
-					$urlInfo.append(that.renderYoutube());
+					that.renderYoutube();
 				})
 				.fail(function (err) {
 					console.log('err', err);
 				});
+		},
+
+		getOtherURLInfo: function () {
+
+			var url = 'http://www.hackreactor.com';
+			// query: select * from html where url="http://some.url.com" and xpath='//title'
+			var yql_url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" + encodeURIComponent(url) + "%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Ftitle'&format=json&callback=?";
+
+			$.getJSON(yql_url, function(json) {
+			  if (json && json.query && json.query.results && json.query.results.title) {
+			    console.log('title', json.query.results.title);
+			  }
+			});
+		},
+
+		// GET URL Info
+		getURLInfo: function (event) {
+			console.log('getURLInfo');
+
+			var $target = $(event.target);
+			var $urlInfo = $target.closest('.url-info');
+
+			var isYoutube = false;
+
+			if (isYoutube) {
+				$urlInfo.append('youtube');
+			} else {
+				$urlInfo.append('not youtube');
+			}
 
 		},
 
