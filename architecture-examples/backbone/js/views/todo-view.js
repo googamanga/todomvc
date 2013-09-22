@@ -57,11 +57,12 @@ var app = app || {};
 				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
 				+ "&callback=";
 
+			var that = this;
+
 			$.getJSON(yql)
 				.done(function (data) {
-					console.log('data', data);
-					deferred.resolve(data);
-					// that.renderYoutube();
+					// console.log('data', data);
+					deferred.resolve(that.renderYoutube());
 				})
 				.fail(function (err) {
 					console.log('err', err);
@@ -96,8 +97,8 @@ var app = app || {};
 			if (isYoutube) {
 				this.getYoutubeInfo()
 					.then(function (data) {
-						console.log('promise data', data);
-						$urlInfo.append('youtube');
+						// console.log('promise data', data);
+						$urlInfo.append(data);
 					});
 			} else {
 				$urlInfo.append('not youtube');
