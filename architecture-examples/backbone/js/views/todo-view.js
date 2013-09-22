@@ -44,13 +44,13 @@ var app = app || {};
 			return $youtube;
 		},
 
+		// Deal with Youtube links
 		getYoutubeInfo: function (vid) {
 			//http://ajaxian.com/archives/using-yql-as-a-proxy-for-cross-domain-ajax
 			//https://developer.yahoo.com/yql/console/?q=select%20*%20from%20meetup.events%20where%20key%3D%22...%22%20and%20zip%3D%2210016%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys#h=select+*+from+youtube.video+where+id%3D'gmvQ1uA202M'
 			//http://net.tutsplus.com/tutorials/javascript-ajax/quick-tip-cross-domain-ajax-request-with-yql-and-jquery/
 			var deferred = $.Deferred();
 
-			// Take the provided url, and add it to a YQL query. Make sure you encode it!
 			var yql = 'https://query.yahooapis.com/v1/public/yql?q=' +
 				encodeURIComponent('select * from youtube.video where id="' + vid + '"') +
 				'&format=json' +
@@ -73,6 +73,7 @@ var app = app || {};
 			return deferred.promise();
 		},
 
+		// Helper function for non-Youtube links
 		getFullImageURL: function (input, url) {
 			var output;
 			if (input && input.src) {
@@ -86,28 +87,36 @@ var app = app || {};
 				}
 				console.log('output', output);
 				return '' + output;
+			} else {
+				return 'http://i.imgur.com/4gpxZkb.png';
+				// default image
 			}
-
 		},
 
+		// For non-Youtube links, get the first image
 		getFirstImage: function (url) {
 			var deferred = $.Deferred();
 
-			var yql = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22' +
+			var yql = 'http://query.yahooapis.com/v1/public/yql?' +
+			  'q=select%20*%20from%20html%20where%20url%3D%22' +
 				encodeURIComponent(url) +
-				'%22%20and%20xpath%3D%27%2F%2Fimg%27&format=json&callback=?';
+				'%22%20and%20xpath%3D%27%2F%2Fimg%27&format=json&callback=';
 
+			var realImageURL;
 			var that = this;
-
 			$.getJSON(yql)
 				.done(function (data) {
 					console.log('data', data);
-					if (data && data.query && data.query.results && data.query.results.img && data.query.results.img[0]) {
-						var realImageURL = that.getFullImageURL(data.query.results.img[0], url);
-						console.log('img', realImageURL);
-						deferred.resolve(realImageURL);
+					if (data && data.query) {
+						if (data.query.results && data.query.results.img && data.query.results.img[0]) {
+							realImageURL = that.getFullImageURL(data.query.results.img[0], url);
+							console.log('img', realImageURL);
+							deferred.resolve(realImageURL);
+						} else {
+							deferred.resolve('http://i.imgur.com/4gpxZkb.png');	//default image
+						}
 					} else {
-						deferred.reject(false);
+						deferred.reject(false);	//reject with false
 					}
 				})
 				.fail(function (err) {
@@ -119,14 +128,16 @@ var app = app || {};
 
 		},
 
-		getOtherURLInfo: function (url) {
+		// Get information for non-Youtube links
+		getTitle: function (url) {
 			var deferred = $.Deferred();
 
 			// http://blog.andrewcantino.com/blog/2010/03/02/get-the-title-of-any-url-with-yql/
 			// query: select * from html where url="http://some.url.com" and xpath='//title'
-			var yql = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" +
+			var yql = "http://query.yahooapis.com/v1/public/yql?" +
+			  "q=select%20*%20from%20html%20where%20url%3D%22" +
 				encodeURIComponent(url) +
-				"%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Ftitle'&format=json&callback=?";
+				"%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Ftitle'&format=json&callback=";
 
 			$.getJSON(yql)
 				.done(function (json) {
@@ -134,7 +145,9 @@ var app = app || {};
 						console.log('title', json.query.results.title);
 						deferred.resolve(json.query.results.title);
 					} else {
-						deferred.reject(false);	//what should we pass?
+						deferred.resolve('Default title');
+						// todo
+						// better error handling
 					}
 				})
 				.fail(function (err) {
@@ -145,9 +158,9 @@ var app = app || {};
 			return deferred.promise();
 		},
 
-		// GET URL Info
+		// Deal with all the URL to-do items
+		// Starting point for URL to-do items
 		getURLInfo: function (event) {
-			console.log('getURLInfo');
 
 			var $target = $(event.target);
 			var $oneTodo = $target.closest('.view');
@@ -162,7 +175,6 @@ var app = app || {};
 				var youtubeMatch = title.match(youtubeRegex);
 
 				if (youtubeMatch) {
-					console.log('match', youtubeMatch[1]);
 					vid = youtubeMatch[1];
 					isYoutube = true;
 				} else {
@@ -171,16 +183,13 @@ var app = app || {};
 				}
 			}
 
-			console.log('isYoutube: ', isYoutube);
-
 			if (isYoutube) {
 				this.getYoutubeInfo(vid)
 					.then(function (data) {
-						// console.log('promise data', data);
 						$urlInfo.append(data);
 					});
 			} else {
-				$.when(this.getOtherURLInfo(url), this.getFirstImage(url))
+				$.when(this.getTitle(url), this.getFirstImage(url))
 					.then(function (title, image) {
 						var $output = $('<div></div>');
 						$output.append('<h3>' + title + '</h3>');
@@ -202,7 +211,7 @@ var app = app || {};
 			// this is not the best way to trigger event
 			if (this.model.get('url')) {
 				this.$el.find('.url-info').trigger('click');
-				this.$el.off('click', '.url-info');
+				// this.$el.off('click', '.url-info');
 			}
 
 			return this;
