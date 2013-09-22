@@ -102,7 +102,8 @@ var app = app || {};
 			console.log('getURLInfo');
 
 			var $target = $(event.target);
-			var $urlInfo = $target.closest('.url-info');
+			var $oneTodo = $target.closest('.view');
+			var $urlInfo = $oneTodo.find('.url-info');
 
 			var isYoutube = true;
 			var vid = 'gmvQ1uA202M';
