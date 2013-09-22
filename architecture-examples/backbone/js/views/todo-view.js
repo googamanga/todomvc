@@ -146,6 +146,11 @@ var app = app || {};
 			this.$el.toggleClass('completed', this.model.get('completed'));
 			this.toggleVisible();
 			this.$input = this.$('.edit');
+
+			if (this.model.get('url')) {
+				this.$el.find('.url-info').trigger('click');
+			}
+
 			return this;
 		},
 
