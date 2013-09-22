@@ -161,8 +161,10 @@ var app = app || {};
 			} else {
 				$.when(this.getOtherURLInfo(url), this.getFirstImage(url))
 					.then(function (title, image) {
-						console.log('title ', title, 'image ', image);
-						// $urlInfo.append(title, image);
+						var $output = $('<div></div>');
+						$output.append('<h3>' + title + '</h3>');
+						$output.append('<img src="' + image.src + '">');
+						$urlInfo.append($output);
 					});
 			}
 
