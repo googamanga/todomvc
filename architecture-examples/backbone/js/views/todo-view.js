@@ -72,6 +72,32 @@ var app = app || {};
 			return deferred.promise();
 		},
 
+		getFirstImage: function (url) {
+			var deferred = $.Deferred();
+
+			var yql = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22' +
+				encodeURIComponent(url) +
+				'%22%20and%20xpath%3D%27%2F%2Fimg%27&format=json&callback=?';
+
+			$.getJSON(yql)
+				.done(function (data) {
+					console.log('data', data);
+					if (data && data.query && data.query.results && data.query.results.img && data.query.results.img[0]) {
+						console.log('img', data.query.results.img[0]);
+						deferred.resolve(data.query.results.img[0]);
+					} else {
+						deferred.reject(false);	//what should we pass?
+					}
+				})
+				.fail(function (err) {
+					console.log('err', err);
+					deferred.reject(err);
+				});
+
+			return deferred.promise();
+
+		},
+
 		getOtherURLInfo: function (url) {
 			var deferred = $.Deferred();
 
@@ -133,7 +159,7 @@ var app = app || {};
 						$urlInfo.append(data);
 					});
 			} else {
-				this.getOtherURLInfo(url)
+				this.getFirstImage(url)
 					.then(function (data) {
 						$urlInfo.append(data);
 					});
