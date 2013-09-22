@@ -75,6 +75,7 @@ var app = app || {};
 		getOtherURLInfo: function (url) {
 			var deferred = $.Deferred();
 
+			// http://blog.andrewcantino.com/blog/2010/03/02/get-the-title-of-any-url-with-yql/
 			// query: select * from html where url="http://some.url.com" and xpath='//title'
 			var yql = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" +
 				encodeURIComponent(url) +
