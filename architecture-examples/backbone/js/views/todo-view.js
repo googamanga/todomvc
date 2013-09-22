@@ -105,9 +105,25 @@ var app = app || {};
 			var $oneTodo = $target.closest('.view');
 			var $urlInfo = $oneTodo.find('.url-info');
 
-			var isYoutube = true;
-			var vid = 'gmvQ1uA202M';
-			var url = 'http://www.hackreactor.com';
+			var isYoutube, vid, url;
+			var youtubeRegex = /http\:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9]+)/;
+
+			if (this.model.get('url') && this.model.get('title')) {
+
+				var title = '' + this.model.get('title');
+				var youtubeMatch = title.match(youtubeRegex);
+
+				if (youtubeMatch) {
+					console.log('match', youtubeMatch[1]);
+					vid = youtubeMatch[1];
+					isYoutube = true;
+				} else {
+					isYoutube = false;
+					url = title;
+				}
+			}
+
+			console.log('isYoutube: ', isYoutube);
 
 			if (isYoutube) {
 				this.getYoutubeInfo(vid)
