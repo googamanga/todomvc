@@ -48,13 +48,12 @@ var app = app || {};
 			//http://net.tutsplus.com/tutorials/javascript-ajax/quick-tip-cross-domain-ajax-request-with-yql-and-jquery/
 			var deferred = $.Deferred();
 
-
 			// Take the provided url, and add it to a YQL query. Make sure you encode it!
-			var yql = 'https://query.yahooapis.com/v1/public/yql?q='
-				+ encodeURIComponent('select * from youtube.video where id="' + vid + '"')
-				+ "&format=json"
-				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
-				+ "&callback=";
+			var yql = 'https://query.yahooapis.com/v1/public/yql?q=' +
+				encodeURIComponent('select * from youtube.video where id="' + vid + '"') +
+				'&format=json' +
+				'&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys' +
+				'&callback=';
 
 			var that = this;
 
@@ -71,17 +70,29 @@ var app = app || {};
 			return deferred.promise();
 		},
 
-		getOtherURLInfo: function () {
+		getOtherURLInfo: function (url) {
+			var deferred = $.Deferred();
 
-			var url = 'http://www.hackreactor.com';
 			// query: select * from html where url="http://some.url.com" and xpath='//title'
-			var yql_url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" + encodeURIComponent(url) + "%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Ftitle'&format=json&callback=?";
+			var yql = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" +
+				encodeURIComponent(url) +
+				"%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Ftitle'&format=json&callback=?";
 
-			$.getJSON(yql_url, function(json) {
-			  if (json && json.query && json.query.results && json.query.results.title) {
-			    console.log('title', json.query.results.title);
-			  }
-			});
+			$.getJSON(yql)
+				.done(function (json) {
+					if (json && json.query && json.query.results && json.query.results.title) {
+						console.log('title', json.query.results.title);
+						deferred.resolve(json.query.results.title);
+					} else {
+						deferred.reject(false);	//what should we pass?
+					}
+				})
+				.fail(function (err) {
+					console.log('err', err);
+					deferred.reject(err);
+				});
+
+			return deferred.promise();
 		},
 
 		// GET URL Info
@@ -91,8 +102,9 @@ var app = app || {};
 			var $target = $(event.target);
 			var $urlInfo = $target.closest('.url-info');
 
-			var isYoutube = true;
+			var isYoutube = false;
 			var vid = 'gmvQ1uA202M';
+			var url = 'http://www.hackreactor.com';
 
 			if (isYoutube) {
 				this.getYoutubeInfo(vid)
@@ -101,7 +113,10 @@ var app = app || {};
 						$urlInfo.append(data);
 					});
 			} else {
-				$urlInfo.append('not youtube');
+				this.getOtherURLInfo(url)
+					.then(function (data) {
+						$urlInfo.append(data);
+					});
 			}
 
 		},
