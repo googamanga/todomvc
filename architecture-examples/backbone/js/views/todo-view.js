@@ -159,9 +159,10 @@ var app = app || {};
 						$urlInfo.append(data);
 					});
 			} else {
-				this.getFirstImage(url)
-					.then(function (data) {
-						$urlInfo.append(data);
+				$.when(this.getOtherURLInfo(url), this.getFirstImage(url))
+					.then(function (title, image) {
+						console.log('title ', title, 'image ', image);
+						// $urlInfo.append(title, image);
 					});
 			}
 
