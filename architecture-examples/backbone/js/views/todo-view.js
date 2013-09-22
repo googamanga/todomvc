@@ -72,6 +72,23 @@ var app = app || {};
 			return deferred.promise();
 		},
 
+		getFullImageURL: function (input, url) {
+			var output;
+			if (input && input.src) {
+				output = input.src;
+				if (output.indexOf('http://') === 0) {
+					//pass
+				} else if (output.indexOf('//') === 0) {
+					output = 'http:' + output;
+				} else if (output.indexOf('/') === 0) {
+					output = url + output;
+				}
+				console.log('output', output);
+				return '' + output;
+			}
+
+		},
+
 		getFirstImage: function (url) {
 			var deferred = $.Deferred();
 
@@ -79,12 +96,15 @@ var app = app || {};
 				encodeURIComponent(url) +
 				'%22%20and%20xpath%3D%27%2F%2Fimg%27&format=json&callback=?';
 
+			var that = this;
+
 			$.getJSON(yql)
 				.done(function (data) {
 					console.log('data', data);
 					if (data && data.query && data.query.results && data.query.results.img && data.query.results.img[0]) {
-						console.log('img', data.query.results.img[0]);
-						deferred.resolve(data.query.results.img[0]);
+						var realImageURL = that.getFullImageURL(data.query.results.img[0], url);
+						console.log('img', realImageURL);
+						deferred.resolve(realImageURL);
 					} else {
 						deferred.reject(false);	//what should we pass?
 					}
@@ -163,7 +183,7 @@ var app = app || {};
 					.then(function (title, image) {
 						var $output = $('<div></div>');
 						$output.append('<h3>' + title + '</h3>');
-						$output.append('<img src="' + image.src + '">');
+						$output.append('<img src="' + image + '">');
 						$urlInfo.append($output);
 					});
 			}
