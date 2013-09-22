@@ -22,7 +22,7 @@ var app = app || {};
 			'click .destroy': 'clear',
 			'keypress .edit': 'updateOnEnter',
 			'blur .edit': 'close',
-			'click .url-info': 'getURLInfo'
+			'click .url-info': 'getURLInfo'	//for debug purpose; binding is removed upon rendering
 		},
 
 		// The TodoView listens for changes to its model, re-rendering. Since there's
@@ -199,6 +199,7 @@ var app = app || {};
 
 			if (this.model.get('url')) {
 				this.$el.find('.url-info').trigger('click');
+				this.$el.off('click', '.url-info');
 			}
 
 			return this;
