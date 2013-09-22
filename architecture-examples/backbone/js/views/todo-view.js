@@ -34,9 +34,10 @@ var app = app || {};
 			this.listenTo(this.model, 'visible', this.toggleVisible);
 		},
 
-		renderYoutube: function (vid) {
-			var $youtube = $('<div></div>');
-			$youtube.html('<iframe width="420" height="315"' +
+		renderYoutube: function (vid, videoTitle) {
+			var $youtube = $('<div class="youtube-right"></div>');
+			$youtube.html('<h3>' + videoTitle + '</h3>' +
+				'<iframe width="420" height="315"' +
 				'src="http://www.youtube.com/embed/' + vid + '"' +
 				'frameborder="0" allowfullscreen></iframe>');
 			return $youtube;
@@ -59,8 +60,9 @@ var app = app || {};
 
 			$.getJSON(yql)
 				.done(function (data) {
-					// console.log('data', data);
-					deferred.resolve(that.renderYoutube(vid));
+					console.log('data', data);
+					var videoTitle = data && data.query && data.query.results && data.query.results.video && data.query.results.video.title;
+					deferred.resolve(that.renderYoutube(vid, videoTitle));
 				})
 				.fail(function (err) {
 					console.log('err', err);
@@ -102,7 +104,7 @@ var app = app || {};
 			var $target = $(event.target);
 			var $urlInfo = $target.closest('.url-info');
 
-			var isYoutube = false;
+			var isYoutube = true;
 			var vid = 'gmvQ1uA202M';
 			var url = 'http://www.hackreactor.com';
 
